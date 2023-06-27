@@ -1,4 +1,5 @@
 --- This file is used to setup the database for the quiz app.
+
 --- A user is created with the name quiz_app_user and password quiz_app_password.
 --- The user is granted all privileges on the quiz_app_db database.
 --- The user is granted select privileges on the performance_schema database.
