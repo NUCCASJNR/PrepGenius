@@ -1,0 +1,1 @@
+The Quiz Application is a web-based platform designed to offer quizzes and tests focused on programming languages. The application aims to provide an interactive and educational experience for users who want to test their knowledge and improve their skills in various programming languages.
