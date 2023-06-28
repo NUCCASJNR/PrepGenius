@@ -16,9 +16,9 @@ class BaseModel(db.model):
         created_at: Represents the time each class was created
         updated_at: REpresents the time each class was updated
     """
-    id = db.Column(db.string(126), primary_key=True, default=str(uuid.uuid4()), unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id = db.Column(db.string(126), primary_key=True, default=str(uuid.uuid4()), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
     def save(self):
