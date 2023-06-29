@@ -13,7 +13,7 @@ def get_subjects():
     """
     Retrieves all the subjects from the database
     """
-    subs = Subject.query.all()
+    subs = Subject.all()
     subs_list = []
     for sub in subs:
         sub_data = sub.to_dict()

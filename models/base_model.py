@@ -73,3 +73,13 @@ class BaseModel(db.Model):
         Retrieves all objects of the current model
         """
         return cls.query.all()
+    
+    @classmethod
+    def get(cls, id):
+        """
+        Retrieve an object by its id.
+        Returns the object if found, None otherwise.
+        """
+        if id:
+            return cls.query.get(id)
+        return None

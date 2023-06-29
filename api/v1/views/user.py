@@ -26,7 +26,7 @@ def get_one_user(user_id):
     Retrieve one user from the database using
     the provided user_id
     """
-    user = User.query.get(user_id)
+    user = User.get(user_id)
     if user:
         user_data = user.to_dict()
         return jsonify(user_data)
@@ -39,7 +39,7 @@ def delete_user(user_id):
     Delete one user from the database using
     the provided user_id
     """
-    user = User.query.get(user_id)
+    user = User.get(user_id)
     if user:
         user_data = user.to_dict()
         user.delete()
