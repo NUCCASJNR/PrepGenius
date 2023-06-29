@@ -12,7 +12,7 @@ def get_users():
     """
     Retrieves all users from the database
     """
-    users = User.query.all()
+    users = User.all()
     user_list = []
     for user in users:
         user_data = user.to_dict()

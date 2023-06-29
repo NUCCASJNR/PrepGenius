@@ -66,3 +66,10 @@ class BaseModel(db.Model):
             attribute_value = getattr(self, attribute_name)
             attributes[attribute_name] = attribute_value
         return attributes
+    
+    @classmethod
+    def all(cls):
+        """
+        Retrieves all objects of the current model
+        """
+        return cls.query.all()
