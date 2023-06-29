@@ -18,7 +18,8 @@ host = getenv("prep_host")
 pwd = getenv("prep_pwd")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db = SQLAlchemy(app)
 
 
@@ -31,17 +32,20 @@ class BaseModel(db.Model):
         updated_at: Represents the time each class was updated
     """
     __abstract__ = True
-    id = db.Column(db.String(126), primary_key=True, default=str(uuid.uuid4()), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    
+    id = db.Column(db.String(126), primary_key=True,
+                   default=str(uuid.uuid4()), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime,
+                           default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime,
+                           default=datetime.utcnow, nullable=False)
+
     def save(self):
         """
         Saves the current session into the database
         """
         db.session.add(self)
         db.session.commit()
-    
+
     def delete(self):
         """
         Deletes the current session from the database
