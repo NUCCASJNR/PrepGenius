@@ -29,3 +29,20 @@ def get_one_user(user_id):
         user_data = user.to_dict()
         return jsonify(user_data)
     abort(404)
+
+@api.route('/users', methods=['POST'], strict_slashes=False)
+def post_new_user():
+    """
+    posts a new user to the database
+    """
+    form = request.get_json()
+    if not form:
+        return jsonify({"error": "Not a JSON"})
+    if "email" not in form:
+        return jsonify({"error": "Missing email"})
+    user = User()
+    for key, value in form.items():
+        setattr(user, key, value)
+    user.save()
+    return jsonify(user.to_dict()), 201
+    user.close()
