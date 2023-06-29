@@ -5,6 +5,7 @@ Topic
 
 from models.base_model import BaseModel, db
 
+
 class Topic(BaseModel):
     """
     Topics class
