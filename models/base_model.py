@@ -47,3 +47,6 @@ class BaseModel(db.Model):
         """
         db.session.delete(self)
         db.session.commit()
+
+    def close(self):
+        db.session.remove(self)
