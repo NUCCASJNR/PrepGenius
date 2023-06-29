@@ -50,3 +50,14 @@ class BaseModel(db.Model):
 
     def close(self):
         db.session.remove(self)
+
+    def to_dict(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        attributes = {}
+        for column in self.__table__.columns:
+            attribute_name = column.name
+            attribute_value = getattr(self, attribute_name)
+            attributes[attribute_name] = attribute_value
+        return attributes

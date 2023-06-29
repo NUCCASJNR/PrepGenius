@@ -18,5 +18,5 @@ with app.app_context():
     new_user.save()
 
 # Optionally, you can also fetch the inserted user from the database
-inserted_user = User.query.filter_by(username='john_doe').first()
-print(inserted_user)
+#inserted_user = User.query.filter_by(username='john_doe').first()
+#print(inserted_user)
