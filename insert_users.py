@@ -7,10 +7,10 @@ from models.base_model import app, db
 with app.app_context():
 # Create a new user instance
     new_user = User(
-        username='john_',
-        email='john.d@examp.com',
-        first_name='John',
-        last_name='Doe',
+        username='idan',
+        email='idan@examp.com',
+        first_name='AlAreef',
+        last_name='Ayompo',
         password='password123'
     )
 
