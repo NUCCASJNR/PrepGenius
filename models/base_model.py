@@ -6,9 +6,10 @@ BaseModel class for other classes to inherit from
 
 import uuid
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
 from os import getenv
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import QueuePool
 
 user = getenv("prep_user")
@@ -18,11 +19,6 @@ pwd = getenv("prep_pwd")
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
-app.config['SQLALCHEMY_POOL_SIZE'] = 10
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'poolclass': QueuePool,
-    'pool_size': 10  # Adjust the pool size as per your requirements
-}
 db = SQLAlchemy(app)
 
 

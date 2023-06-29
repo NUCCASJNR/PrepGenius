@@ -30,6 +30,20 @@ def get_one_user(user_id):
         return jsonify(user_data)
     abort(404)
 
+@api.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False )
+def delete_user(user_id):
+    """
+    Delete one user from the database using
+    the provided user_id
+    """
+    user = User.query.get(user_id)
+    if user:
+        user_data = user.to_dict()
+        user.delete()
+        return jsonify({"Status": "OK"})
+    abort(404)
+
+
 @api.route('/users', methods=['POST'], strict_slashes=False)
 def post_new_user():
     """
@@ -40,9 +54,14 @@ def post_new_user():
         return jsonify({"error": "Not a JSON"})
     if "email" not in form:
         return jsonify({"error": "Missing email"})
+    if "username" not in form:
+        return jsonify({"error": "Missing Username"})
+    if "last_name" not in form:
+        return jsonify({"error": "Missing Lastname"})
+    if "first_name" not in form:
+        return jsonify({"error": "Missing Firstname"})
     user = User()
     for key, value in form.items():
         setattr(user, key, value)
     user.save()
     return jsonify(user.to_dict()), 201
-    user.close()

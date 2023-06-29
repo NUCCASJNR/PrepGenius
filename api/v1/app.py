@@ -17,12 +17,8 @@ db.init_app(app)
 app.register_blueprint(api)
 
 @app.teardown_appcontext
-def close_db_connection(exception):
-    """
-    calls storage.close() to close the database connection
-    """
-    BaseModel().close()
-
+def shutdown_session(exception=None):
+    db.session.close()
 
 @app.errorhandler(404)
 def error(error):
