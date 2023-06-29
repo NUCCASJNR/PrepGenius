@@ -12,13 +12,16 @@ host = getenv("prep_host")
 pwd = getenv("prep_pwd")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+      f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db.init_app(app)
 app.register_blueprint(api)
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db.session.close()
+
 
 @app.errorhandler(404)
 def error(error):
@@ -26,6 +29,7 @@ def error(error):
     Handles 404 error
     """
     return make_response(jsonify({"error": "Not found"}), 404)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

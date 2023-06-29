@@ -6,6 +6,7 @@ from api.v1.views import api
 from models.base_model import BaseModel, db
 from models.user import User
 
+
 @api.route('/users', methods=['GET'], strict_slashes=False)
 def get_users():
     """
@@ -17,6 +18,7 @@ def get_users():
         user_data = user.to_dict()
         user_list.append(user_data)
     return jsonify(user_list)
+
 
 @api.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def get_one_user(user_id):
@@ -30,7 +32,8 @@ def get_one_user(user_id):
         return jsonify(user_data)
     abort(404)
 
-@api.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False )
+
+@api.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id):
     """
     Delete one user from the database using

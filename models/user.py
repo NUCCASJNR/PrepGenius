@@ -4,6 +4,7 @@ User class for the practice app
 """
 from models.base_model import BaseModel, db
 
+
 class User(BaseModel):
     """
     User class that inherits from base_model
