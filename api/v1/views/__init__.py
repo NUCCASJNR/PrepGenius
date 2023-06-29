@@ -7,3 +7,4 @@ from flask import Blueprint, Flask
 api = Blueprint('api', __name__, url_prefix='/api')
 
 from api.v1.views.user import *
+from api.v1.views.subject import *
