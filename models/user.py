@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-User class for the quiz app
+User class for the practice app
 """
 from models.base_model import BaseModel, db
 
