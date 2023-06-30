@@ -11,6 +11,7 @@ from os import getenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import QueuePool
+from flask_migrate import Migrate
 
 user = getenv("prep_user")
 db_name = getenv("prep_db")
@@ -21,7 +22,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db = SQLAlchemy(app)
-
+migrate = Migrate(app, db)
 
 class BaseModel(db.Model):
     """

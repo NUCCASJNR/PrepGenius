@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from flask import Blueprint, Flask, jsonify, make_response
-
+from flask_migrate import Migrate
 from api.v1.views import api
 from os import getenv
 from models.base_model import db, BaseModel
@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
       f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db.init_app(app)
+migrate = Migrate(app, db)
 app.register_blueprint(api)
 
 

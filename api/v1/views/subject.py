@@ -19,3 +19,14 @@ def get_subjects():
         sub_data = sub.to_dict()
         subs_list.append(sub_data)
     return jsonify(subs_list)
+
+@api.route('/subjects/<sub_id>', methods=['GET'], strict_slashes=False)
+def get_one_subject(sub_id):
+    """
+    Retrieve one subject from the database using the
+    provided subject_id
+    """
+    sub = Subject.get(sub_id)
+    if sub:
+        return jsonify(sub.to_dict())
+    abort(404)
