@@ -11,4 +11,4 @@ class Subject(BaseModel):
     Subject class
     """
     __tablename__ = 'subjects'
-    name = db.Column(db.String(128), nullable=False)
+    name = db.Column(db.String(128), nullable=False, unique=True)

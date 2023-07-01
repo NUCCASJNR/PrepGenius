@@ -33,12 +33,13 @@ class BaseModel(db.Model):
         updated_at: Represents the time each class was updated
     """
     __abstract__ = True
-    id = db.Column(db.String(126), primary_key=True,
-                   default=str(uuid.uuid4()), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime,
-                           default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime,
-                           default=datetime.utcnow, nullable=False)
+    id = db.Column(db.String(126), primary_key=True, unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id = str(uuid.uuid4())
 
     def save(self):
         """
