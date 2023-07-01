@@ -67,3 +67,21 @@ def post_new_user():
         setattr(user, key, value)
     user.save()
     return jsonify(user.to_dict()), 201
+
+@api.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
+def update_user(user_id):
+    """
+    Updates the details of an exisiting user in the users table
+    """
+    form = request.get_json()
+    ignore = ['id', 'created_at', 'updated_at']
+    if not form:
+        return jsonify({"error": "Not a JSON"})
+    user = User.get(user_id)
+    if not user:
+        abort(404)
+    for key, value, in form.items():
+        if key not in ignore:
+            setattr(user, key, value)
+    user.save()
+    return jsonify(user.to_dict()) 
