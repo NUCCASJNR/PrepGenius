@@ -1,0 +1,16 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "PrepGenius"
+version = "0.1.0"
+description = "A Flask application for PrepGenius"
+authors = ["Alareef <alareefadegbite@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.3.2"
+flask-migrate = "^4.0.4"
+flask-script = "^2.0.6"
+# Add any other project dependencies here

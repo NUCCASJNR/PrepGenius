@@ -30,3 +30,5 @@ def get_one_subject(sub_id):
     if sub:
         return jsonify(sub.to_dict())
     abort(404)
+
+# @api.route('/subjects/<sub_id>', methods=['DELETE'], strict_slashes=False)

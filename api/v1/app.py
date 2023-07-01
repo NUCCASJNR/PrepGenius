@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from api.v1.views import api
 from os import getenv
 from models.base_model import db, BaseModel
+from models.extensions import db, migrate
 
 user = getenv("prep_user")
 db_name = getenv("prep_db")
@@ -15,7 +16,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
       f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db.init_app(app)
-migrate = Migrate(app, db)
+migrate.init_app(app, db)
 app.register_blueprint(api)
 
 
