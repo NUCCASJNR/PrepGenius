@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# db.init_app(app)
 
 class BaseModel(db.Model):
     """

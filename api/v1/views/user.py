@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from flask import abort, jsonify, make_response, request
-
 from api.v1.views import api
 from models.base_model import BaseModel, db
 from models.user import User
