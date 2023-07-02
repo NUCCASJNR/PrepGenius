@@ -34,17 +34,21 @@ class BaseModel(db.Model):
     """
     __abstract__ = True
     id = db.Column(db.String(126), primary_key=True, unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+
 
     def save(self):
         """
         Saves the current session into the database
         """
+        self.updated_at = datetime.now()
         db.session.add(self)
         db.session.commit()
 

@@ -7,7 +7,6 @@ from flask import Flask, jsonify, abort, request
 from models.subject import Subject
 from api.v1.views import api
 
-
 @api.route('/subjects', methods=['GET'], strict_slashes=False)
 def get_subjects():
     """
