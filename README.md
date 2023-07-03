@@ -7,6 +7,7 @@ PrepGenius is a web application designed to help students prepare for their JAMB
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Database Structure](#database-structure)
+- [Table Creation](#table-creation)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -39,6 +40,21 @@ The database structure consists of the following tables:
 - **selected_subs**: Tracks the subjects selected by each user.
 
 For a more detailed explanation of the tables and their relationships, please refer to the [database model section](#database-structure) in this repository.
+
+## Table Creation
+
+To create the necessary tables in the database, follow these steps:
+
+1. Set up your MySQL database and configure the connection details in the Flask configuration file.
+2. Open a terminal and navigate to the project directory.
+3. Open the python interpreter and Run the following command to create the tables:
+
+```bash
+python3
+from models.base_model import BaseModel, app, db
+with app.app_context():
+    db.create_all()
+```
 
 ## Installation
 
