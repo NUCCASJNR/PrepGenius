@@ -10,6 +10,7 @@ PrepGenius is a web application for practice tests and exam preparation. It prov
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [Migrations](#migrations)
 - [Work in progress](#Work-in-Progress)
 
 ## Features
@@ -58,6 +59,19 @@ For a more detailed explanation of the tables and their relationships, please re
 ## Contributing
 
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request. For major changes, please discuss them in advance to ensure they align with the project's goals.
+
+## Migrations
+
+To set up the database structure, follow these steps:
+
+1. Make sure you have the necessary database connection details configured in the Flask configuration file.
+2. Open a terminal and navigate to the project directory.
+3. Run the following commands to apply the database migrations:
+```bash
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+```
 
 ## Work in Progress
 
