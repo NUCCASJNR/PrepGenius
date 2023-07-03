@@ -10,7 +10,7 @@ PrepGenius is a web application for practice tests and exam preparation. It prov
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
+- [Work in progress](#Work-in-Progress)
 
 ## Features
 
@@ -44,7 +44,8 @@ For a more detailed explanation of the tables and their relationships, please re
 1. Clone the repository: `git clone https://github.com/NUCCASJNR/PrepGenius.git`
 2. Install the required dependencies: `pip install -r requirements.txt`
 3. Set up your MySQL database and configure the connection details in the Flask configuration file.
-4. Run the Flask application: `flask run`
+5. `cd PrepGenius`
+4. Run the Flask application: `python3 -m api.app`
 
 ## Usage
 
@@ -58,6 +59,13 @@ For a more detailed explanation of the tables and their relationships, please re
 
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request. For major changes, please discuss them in advance to ensure they align with the project's goals.
 
-## License
+## Work in Progress
 
-This project is licensed under the [MIT License](LICENSE).
+This project is actively being developed, and the following features are currently in progress:
+
+- Integration with external API for data retrieval
+- Implementing user authentication and authorization
+- Enhancing the user interface and adding interactive elements
+- Adding support for additional languages
+
+Please note that these features are subject to change and may be updated as the project progresses. Contributions and suggestions are welcome!
