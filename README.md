@@ -50,7 +50,6 @@ To create the necessary tables in the database, follow these steps:
 3. Open the python interpreter and Run the following command to create the tables:
 
 ```bash
-python3
 from models.base_model import BaseModel, app, db
 with app.app_context():
     db.create_all()
@@ -81,7 +80,10 @@ Contributions are welcome! If you have any suggestions, bug reports, or feature 
 To set up the database structure, follow these steps:
 
 1. Make sure you have the necessary database connection details configured in the Flask configuration file.
-2. Open a terminal and navigate to the project directory.
+2. Open a terminal and navigate to the `api` directory in the project directory where we have the `app.py`.
+```bash
+cd PrepGenius/api
+```
 3. Run the following commands to apply the database migrations:
 ```bash
 flask db init
