@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from api.v1.views import api
+from api.views import *
 from models.base_model import BaseModel, db
 
 
