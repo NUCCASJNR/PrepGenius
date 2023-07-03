@@ -1,6 +1,6 @@
 # PrepGenius
 
-PrepGenius is a web application for practice tests and exam preparation. It provides a platform for users to access questions, choose subjects, and track their scores. This repository contains the backend code and database structure for the PrepGenius application.
+PrepGenius is a web application designed to help students prepare for their JAMB (Joint Admissions and Matriculation Board) exams by providing a comprehensive collection of past questions. The portal aims to assist students in familiarizing themselves with the exam format, testing their knowledge, and improving their performance.It provides access questions, choose subjects, and track their scores. This repository contains the backend code and database structure for the PrepGenius application.
 
 ## Table of Contents
 
