@@ -26,7 +26,7 @@ PrepGenius is a web application designed to help students prepare for their JAMB
 
 - Python
 - Flask framework
-- SQLAlchemy
+- Flask-SQLAlchemy
 - MySQL database
 
 ## Database Structure
