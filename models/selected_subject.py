@@ -16,9 +16,5 @@ class SelectedSubject(BaseModel):
     user_id = db.Column(db.String(126), db.ForeignKey('users.id'), nullable=False)
     subject_id = db.Column(db.String(126), db.ForeignKey('subjects.id'), nullable=False)
     is_compulsory = db.Column(db.Boolean, default=False)
-
-    @classmethod
-    def get_complusory_sub(cls, user_id):
-        """
-        Makes a subject complusory
-        """
+    user = db.relationship('User', backref='selected_subjects')
+    subject = db.relationship('Subject', backref='selected_subjects')

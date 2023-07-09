@@ -3,6 +3,7 @@
 This script is used to insert into the database 
 aside using the API
 """
+
 from sys import argv
 from models.user import User
 from models.base_model import app, db
