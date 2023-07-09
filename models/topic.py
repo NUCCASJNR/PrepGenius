@@ -12,3 +12,4 @@ class Topic(BaseModel):
     """
     __tablename__ = 'topics'
     name = db.Column(db.String(128), nullable=False)
+    subject_id = db.Column(db.String(128), db.ForeignKey('subjects.id'), nullable=False)
