@@ -54,3 +54,23 @@ def create_subject():
     sub = Subject(**request.get_json())
     sub.save()
     return jsonify(sub.to_dict()), 201
+
+@api.route('/subjects/<sub_id>', methods=['PUT'], strict_slashes=False)
+def update_subject(sub_id):
+    """
+    Updates a subject in the subject table where the
+    sub_id matches a subject_id in the table
+    """
+    form = request.get_json()
+    ignore = ['id', 'created_at', 'updated_at']
+    if not form:
+        return jsonify({"error": "Not a JSON"})
+    
+    sub = Subject.get(sub_id)
+    if sub:
+        for key, value in form.items():
+            if key not in ignore:
+                setattr(sub, key, value)
+        sub.save()
+        return jsonify(sub.to_dict())
+    abort(404)
