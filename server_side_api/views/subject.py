@@ -5,7 +5,7 @@ Handles all Restful APIs for subjects
 
 from flask import Flask, jsonify, abort, request
 from models.subject import Subject
-from api.views import api
+from server_side_api.views import api
 
 @api.route('/subjects', methods=['GET'], strict_slashes=False)
 def get_subjects():

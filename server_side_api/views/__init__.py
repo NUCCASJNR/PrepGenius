@@ -6,5 +6,5 @@ from flask import Blueprint, Flask
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
-from api.views.user import *
-from api.views.subject import *
+from server_side_api.views.user import *
+from server_side_api.views.subject import *
