@@ -10,6 +10,7 @@ PrepGenius is a web application designed to help students prepare for their JAMB
 - [Table Creation](#table-creation)
 - [Installation](#installation)
 - [Usage](#usage)
+- [API Routes](API Routes)
 - [Contributing](#contributing)
 - [Migrations](#migrations)
 - [Work in progress](#Work-in-Progress)
@@ -70,6 +71,42 @@ with app.app_context():
 3. Explore the available subjects and select the subjects you want to practice.
 4. Access the questions and attempt them.
 5. View your scores and progress for each subject and overall.
+
+## API Routes
+The following API routes are available in the PrepGenius application:
+
+- Subjects
+1. GET /api/subjects - Retrieve all subjects.
+
+```bash
+http http://127.0.0.1:5000/api/subjects
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 375
+Content-Type: application/json
+Date: Mon, 10 Jul 2023 11:41:42 GMT
+Server: Werkzeug/2.3.4 Python/3.10.6
+
+[
+    {
+        "created_at": "Sun, 09 Jul 2023 23:39:41 GMT",
+        "id": "3a07fd25-1b15-4c49-9540-3ed07f38389a",
+        "name": "maths",
+        "updated_at": "Sun, 09 Jul 2023 23:39:41 GMT"
+    },
+    {
+        "created_at": "Sun, 09 Jul 2023 23:36:42 GMT",
+        "id": "c96ad9ac-be26-4710-a0cf-7602b1833d33",
+        "name": "english studies",
+        "updated_at": "Mon, 10 Jul 2023 12:09:28 GMT"
+    }
+]
+```
+
+GET /api/subjects/{subject_id} - Retrieve a specific subject by ID.
+POST /api/subjects - Create a new subject.
+PUT /api/subjects/{subject_id} - Update a subject by ID.
+DELETE /api/subjects/{subject_id} - Delete a subject by ID.
 
 ## Contributing
 
