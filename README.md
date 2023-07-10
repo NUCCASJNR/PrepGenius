@@ -124,7 +124,7 @@ Server: Werkzeug/2.3.4 Python/3.10.6
 3. POST /api/subjects - Create a new subject.
 
 ```bash
-alareef@codewithalareef:~/PrepGenius$ http POST http://127.0.0.1:5000/api/subjects name=physics -vvv
+http POST http://127.0.0.1:5000/api/subjects name=physics -vvv
 POST /api/subjects HTTP/1.1
 Accept: application/json, */*;q=0.5
 Accept-Encoding: gzip, deflate
