@@ -10,7 +10,7 @@ PrepGenius is a web application designed to help students prepare for their JAMB
 - [Table Creation](#table-creation)
 - [Installation](#installation)
 - [Usage](#usage)
-- [API Routes](API Routes)
+- [API Routes](#API-Routes)
 - [Contributing](#contributing)
 - [Migrations](#migrations)
 - [Work in progress](#Work-in-Progress)
