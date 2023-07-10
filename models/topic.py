@@ -13,3 +13,10 @@ class Topic(BaseModel):
     __tablename__ = 'topics'
     name = db.Column(db.String(128), nullable=False)
     subject_id = db.Column(db.String(128), db.ForeignKey('subjects.id'), nullable=False)
+    num_questions = db.Column(db.Integer, default=0)
+
+    def increment_questions(self):
+        """
+        Increments the questions associated with a topic by 1
+        """
+        self.num_questions += 1
