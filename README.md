@@ -103,7 +103,24 @@ Server: Werkzeug/2.3.4 Python/3.10.6
 ]
 ```
 
-GET /api/subjects/{subject_id} - Retrieve a specific subject by ID.
+2. GET /api/subjects/{subject_id} - Retrieve a specific subject by ID.
+```bash
+ http http://127.0.0.1:5000/api/subjects/3a07fd25-1b15-4c49-9540-3ed07f38389a
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 168
+Content-Type: application/json
+Date: Mon, 10 Jul 2023 11:44:51 GMT
+Server: Werkzeug/2.3.4 Python/3.10.6
+
+{
+    "created_at": "Sun, 09 Jul 2023 23:39:41 GMT",
+    "id": "3a07fd25-1b15-4c49-9540-3ed07f38389a",
+    "name": "maths",
+    "updated_at": "Sun, 09 Jul 2023 23:39:41 GMT"
+}
+```
+
 POST /api/subjects - Create a new subject.
 PUT /api/subjects/{subject_id} - Update a subject by ID.
 DELETE /api/subjects/{subject_id} - Delete a subject by ID.
