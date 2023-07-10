@@ -121,9 +121,84 @@ Server: Werkzeug/2.3.4 Python/3.10.6
 }
 ```
 
-POST /api/subjects - Create a new subject.
-PUT /api/subjects/{subject_id} - Update a subject by ID.
-DELETE /api/subjects/{subject_id} - Delete a subject by ID.
+3. POST /api/subjects - Create a new subject.
+
+```bash
+alareef@codewithalareef:~/PrepGenius$ http POST http://127.0.0.1:5000/api/subjects name=physics -vvv
+POST /api/subjects HTTP/1.1
+Accept: application/json, */*;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Content-Length: 19
+Content-Type: application/json
+Host: 127.0.0.1:5000
+User-Agent: HTTPie/2.6.0
+
+{
+    "name": "physics"
+}
+
+
+HTTP/1.1 201 CREATED
+Connection: close
+Content-Length: 170
+Content-Type: application/json
+Date: Mon, 10 Jul 2023 11:47:34 GMT
+Server: Werkzeug/2.3.4 Python/3.10.6
+
+{
+    "created_at": "Mon, 10 Jul 2023 12:47:34 GMT",
+    "id": "0ef32d79-5e92-4bdb-aea7-d61817028eb7",
+    "name": "physics",
+    "updated_at": "Mon, 10 Jul 2023 12:47:34 GMT"
+}
+```
+
+4. PUT /api/subjects/{subject_id} - Update a subject by ID.
+```bash
+http PUT http://127.0.0.1:5000/api/subjects/0ef32d79-5e92-4bdb-aea7-d61817028eb7 name=chemistry -vvv
+PUT /api/subjects/0ef32d79-5e92-4bdb-aea7-d61817028eb7 HTTP/1.1
+Accept: application/json, */*;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Content-Length: 21
+Content-Type: application/json
+Host: 127.0.0.1:5000
+User-Agent: HTTPie/2.6.0
+
+{
+    "name": "chemistry"
+}
+
+
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 172
+Content-Type: application/json
+Date: Mon, 10 Jul 2023 11:49:35 GMT
+Server: Werkzeug/2.3.4 Python/3.10.6
+
+{
+    "created_at": "Mon, 10 Jul 2023 12:47:34 GMT",
+    "id": "0ef32d79-5e92-4bdb-aea7-d61817028eb7",
+    "name": "chemistry",
+    "updated_at": "Mon, 10 Jul 2023 12:49:35 GMT"
+}
+```
+
+5. DELETE /api/subjects/{subject_id} - Delete a subject by ID.
+
+```bash
+ http DELETE http://127.0.0.1:5000/api/subjects/0ef32d79-5e92-4bdb-aea7-d61817028eb7 
+HTTP/1.1 200 OK
+Connection: close
+Content-Length: 3
+Content-Type: application/json
+Date: Mon, 10 Jul 2023 11:50:28 GMT
+Server: Werkzeug/2.3.4 Python/3.10.6
+
+{}
+```
 
 ## Contributing
 
