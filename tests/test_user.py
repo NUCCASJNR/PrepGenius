@@ -79,6 +79,7 @@ class TestUserModel(UserTest):
                 last_name="User"
             )
             user2.save()
+    
     def test_to_dict(self):
        """
        Test to_dict method on user
@@ -103,5 +104,32 @@ class TestUserModel(UserTest):
            'last_name': "User"
         }
        self.assertEqual(user_dict, expected_dict)
+    
+    def test_all(self):
+        """
+        Test all method on user
+        """
+        a_user = User(
+            email='all1@gmal.com',
+            username='first_user',
+            password="test",
+            first_name="Test",
+            last_name="User"
+        )
+        a_user.save()
+        b_user = User(
+            email='all2@gmal.com',
+            username='second_user',
+            password="test",
+            first_name="Test",
+            last_name="User"
+        )
+        b_user.save()
+
+        all_users = User.all()
+        self.assertEqual(len(all_users), 2)
+        self.assertIn(a_user, all_users)
+        self.assertIn(b_user, all_users)
+
 if __name__ == '__main__':
     unittest.main()
