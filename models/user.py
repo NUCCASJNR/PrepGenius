@@ -21,3 +21,9 @@ class User(BaseModel):
     first_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
     password = db.Column(db.String(60), nullable=False)
+
+
+    def save(self):
+        if not isinstance(self.email, str):
+            raise TypeError("Email must be a string")
+        super().save()

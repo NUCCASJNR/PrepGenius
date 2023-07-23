@@ -10,11 +10,9 @@ user = getenv("prep_user")
 pwd = getenv("prep_pwd")
 
 if is_testing:
-    # Use a separate test database
     db_name = "prep_genius_db_test"
     host = getenv("prep_host")
 else:
-    # Use the regular development database
     db_name = getenv("prep_db")
     host = getenv("prep_host")
 

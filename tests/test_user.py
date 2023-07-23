@@ -4,6 +4,7 @@ import os
 import unittest
 
 from flask_testing import TestCase
+from sqlalchemy.exc import IntegrityError
 
 from database import app, db
 from models.user import User
@@ -35,9 +36,49 @@ class TestUserModel(UserTest):
         )
         user.save()
         retrieved_user = User.get(user.id)
-        user_name = User.query.filter_by(username=user.username).first()
+        user_name = "tesing"
         self.assertEqual(user, retrieved_user)
-        self.assertEqual(user, user_name)
+        self.assertEqual(user.username, user_name)
+        self.assertEqual(user.email, "test@eailcom")
+        self.assertEqual(user.last_name, "User")
+        self.assertEqual(user.first_name, "Test")
+
+    def test_wrong_data_type(self):
+        """
+        Test wrong data type
+        """
+        with self.assertRaises(TypeError):
+            user = User(
+                email=123,
+                username="tesing",
+                password="test",
+                first_name="Test",
+                last_name="User"
+            )
+            user.save()
+
+    def test_unique_constraints(self):
+        """
+        Test unique constraints for username and email fields
+        """
+        # Create a user with a specific username and email
+        user1 = User(
+            email="test1@example.com",
+            username="test_user_1",
+            password="test",
+            first_name="Test",
+            last_name="User"
+        )
+        user1.save()
+        with self.assertRaises(IntegrityError):
+            user2 = User(
+                email="test1@example.com",
+                username="test_user_1",
+                password="test",
+                first_name="Test",
+                last_name="User"
+            )
+
 
 if __name__ == '__main__':
     unittest.main()
