@@ -7,21 +7,9 @@ BaseModel class for other classes to inherit from
 import uuid
 from datetime import datetime
 from os import getenv
-
+from database import db, app
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.pool import QueuePool
 from flask_migrate import Migrate
-
-user = getenv("prep_user")
-db_name = getenv("prep_db")
-host = getenv("prep_host")
-pwd = getenv("prep_pwd")
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = \
-    f'mysql+mysqldb://{user}:{pwd}@{host}/{db_name}'
-db = SQLAlchemy(app)
 
 class BaseModel(db.Model):
     """

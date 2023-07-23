@@ -1,6 +1,7 @@
 __pycache__/*
 .vscode/*
 server_side_api/__pycache__/*
-api/views/__pycache__/*
+server_side_api/views/__pycache__/*
 models/__pycache__/*
 api/migrations/__pycache__/*
+tests/__pycache__/*
