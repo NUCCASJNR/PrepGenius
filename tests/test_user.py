@@ -78,7 +78,30 @@ class TestUserModel(UserTest):
                 first_name="Test",
                 last_name="User"
             )
-
-
+            user2.save()
+    def test_to_dict(self):
+       """
+       Test to_dict method on user
+       """
+       d_user = User(
+           email="test1@example.comic",
+           username="test_user1",
+           password="test",
+           first_name="Test",
+           last_name="User"
+        )
+       d_user.save()
+       user_dict = d_user.to_dict()
+       expected_dict = {
+           'id': d_user.id,
+           'created_at': d_user.created_at,
+           'updated_at': d_user.updated_at,
+           'email': "test1@example.comic",
+           'username': "test_user1",
+           'password': "test",
+           'first_name': "Test",
+           'last_name': "User"
+        }
+       self.assertEqual(user_dict, expected_dict)
 if __name__ == '__main__':
     unittest.main()
