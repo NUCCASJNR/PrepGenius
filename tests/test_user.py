@@ -130,6 +130,23 @@ class TestUserModel(UserTest):
         self.assertEqual(len(all_users), 2)
         self.assertIn(a_user, all_users)
         self.assertIn(b_user, all_users)
+    
+
+    def test_get(self):
+        """
+        Test the get method for the User model
+        """
+        # Create a user and save it to the database
+        user = User(
+            email="testing@example.com",
+            username="testing_user",
+            password="test",
+            first_name="Test",
+            last_name="User"
+        )
+        user.save()
+        retrieved_user = User.get(user.id)
+        self.assertEqual(retrieved_user, user)
 
 if __name__ == '__main__':
     unittest.main()
