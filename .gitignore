@@ -6,3 +6,4 @@ models/__pycache__/*
 api/migrations/__pycache__/*
 tests/__pycache__/*
 prep_env/*
+.idea/*
