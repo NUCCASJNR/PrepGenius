@@ -32,7 +32,7 @@ Flask-WTF==1.1.1
 greenlet==2.0.2
 gunicorn==20.1.0
 html5lib==1.1
-httpie==2.6.0
+httpie==3.2.2
 idna==3.4
 itsdangerous==2.1.2
 jeepney==0.8.0
@@ -42,9 +42,12 @@ jsonschema-specifications==2023.7.1
 keyring==21.8.0
 lockfile==0.12.2
 Mako==1.2.4
+markdown-it-py==3.0.0
 MarkupSafe==2.1.3
+mdurl==0.1.2
 mistune==3.0.1
 msgpack==1.0.5
+multidict==6.0.4
 mysqlclient==2.2.0
 oauthlib==3.2.2
 packaging==20.9
@@ -68,6 +71,7 @@ reportlab==3.6.8
 requests==2.31.0
 requests-oauthlib==1.3.1
 requests-toolbelt==0.9.1
+rich==13.5.2
 rpds-py==0.9.2
 SecretStorage==3.3.3
 shellingham==1.5.0.post1
