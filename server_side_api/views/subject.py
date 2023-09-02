@@ -39,7 +39,7 @@ def delete_one_subject(sub_id):
     Deletes a subject from the database using the
     provided subject_id
     """
-    sub = Subject.get(sub_id)
+    sub: str = Subject.get(sub_id)
     if sub:
         sub.delete()
         return jsonify({}), 200

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Hanldes all Restful APIs for questions
+Handles all Restful APIs for questions
 """
 
 from flask import jsonify, abort, request
