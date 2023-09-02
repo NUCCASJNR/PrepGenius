@@ -57,12 +57,12 @@ class KeyValueArgType:
 
     def __init__(self, *separators: str):
         self.separators = separators
-        self.special_characters = set('\\')
+        self.special_characters = set()
         for separator in separators:
             self.special_characters.update(separator)
 
     def __call__(self, s: str) -> KeyValueArg:
-        """Parse raw string arg  and return `self.key_value_class` instance.
+        """Parse raw string arg and return `self.key_value_class` instance.
 
         The best of `self.separators` is determined (first found, longest).
         Back slash escaped characters aren't considered as separators
@@ -113,7 +113,7 @@ class KeyValueArgType:
         There are only two token types - strings and escaped characters:
 
         >>> KeyValueArgType('=').tokenize(r'foo\=bar\\baz')
-        ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
+        ['foo', Escaped('='), 'bar\\\\baz']
 
         """
         tokens = ['']
@@ -130,16 +130,11 @@ class KeyValueArgType:
         return tokens
 
 
-class AuthCredentials(KeyValueArg):
-    """Represents parsed credentials."""
-
-    def has_password(self) -> bool:
-        return self.value is not None
-
-    def prompt_password(self, host: str):
-        prompt_text = f'http: password for {self.key}@{host}: '
+class PromptMixin:
+    def _prompt_password(self, prompt: str) -> str:
+        prompt_text = f'http: {prompt}: '
         try:
-            self.value = self._getpass(prompt_text)
+            return self._getpass(prompt_text)
         except (EOFError, KeyboardInterrupt):
             sys.stderr.write('\n')
             sys.exit(0)
@@ -148,6 +143,26 @@ class AuthCredentials(KeyValueArg):
     def _getpass(prompt):
         # To allow easy mocking.
         return getpass.getpass(str(prompt))
+
+
+class SSLCredentials(PromptMixin):
+    """Represents the passphrase for the certificate's key."""
+
+    def __init__(self, value: Optional[str]) -> None:
+        self.value = value
+
+    def prompt_password(self, key_file: str) -> None:
+        self.value = self._prompt_password(f'passphrase for {key_file}')
+
+
+class AuthCredentials(KeyValueArg, PromptMixin):
+    """Represents parsed credentials."""
+
+    def has_password(self) -> bool:
+        return self.value is not None
+
+    def prompt_password(self, host: str) -> None:
+        self.value = self._prompt_password(f'password for {self.key}@{host}:')
 
 
 class AuthCredentialsArgType(KeyValueArgType):

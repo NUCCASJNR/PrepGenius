@@ -1,11 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable, Optional, Union
 
 from .processing import Conversion, Formatting
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
-from ..models import HTTPMessage
+from ..models import HTTPMessage, OutputOptions
+from ..utils import parse_content_type_header
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -32,25 +33,28 @@ class BaseStream(metaclass=ABCMeta):
     def __init__(
         self,
         msg: HTTPMessage,
-        with_headers=True,
-        with_body=True,
-        on_body_chunk_downloaded: Callable[[bytes], None] = None
+        output_options: OutputOptions,
+        on_body_chunk_downloaded: Callable[[bytes], None] = None,
+        **kwargs
     ):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
-        :param with_headers: if `True`, headers will be included
-        :param with_body: if `True`, body will be included
-
+        :param output_options: a :class:`OutputOptions` instance to represent
+                               which parts of the message is printed.
         """
-        assert with_headers or with_body
+        assert output_options.any()
         self.msg = msg
-        self.with_headers = with_headers
-        self.with_body = with_body
+        self.output_options = output_options
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
+        self.extra_options = kwargs
 
     def get_headers(self) -> bytes:
         """Return the headers' bytes."""
         return self.msg.headers.encode()
+
+    def get_metadata(self) -> bytes:
+        """Return the message metadata."""
+        return self.msg.metadata.encode()
 
     @abstractmethod
     def iter_body(self) -> Iterable[bytes]:
@@ -58,20 +62,27 @@ class BaseStream(metaclass=ABCMeta):
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
-        if self.with_headers:
+        if self.output_options.headers:
             yield self.get_headers()
             yield b'\r\n\r\n'
 
-        if self.with_body:
+        if self.output_options.body:
             try:
                 for chunk in self.iter_body():
                     yield chunk
                     if self.on_body_chunk_downloaded:
                         self.on_body_chunk_downloaded(chunk)
             except DataSuppressedError as e:
-                if self.with_headers:
+                if self.output_options.headers:
                     yield b'\n'
                 yield e.message
+
+        if self.output_options.meta:
+            if self.output_options.body:
+                yield b'\n\n'
+
+            yield self.get_metadata()
+            yield b'\n\n'
 
 
 class RawStream(BaseStream):
@@ -86,6 +97,9 @@ class RawStream(BaseStream):
 
     def iter_body(self) -> Iterable[bytes]:
         return self.msg.iter_body(self.chunk_size)
+
+
+ENCODING_GUESS_THRESHOLD = 3
 
 
 class EncodedStream(BaseStream):
@@ -106,8 +120,12 @@ class EncodedStream(BaseStream):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.mime = mime_overwrite or self.msg.content_type
-        self.encoding = encoding_overwrite or self.msg.encoding
+        if mime_overwrite:
+            self.mime = mime_overwrite
+        else:
+            self.mime, _ = parse_content_type_header(self.msg.content_type)
+        self._encoding = encoding_overwrite or self.msg.encoding
+        self._encoding_guesses = []
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
             output_encoding = env.stdout_encoding
@@ -121,8 +139,32 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            line = smart_decode(line, self.encoding)
+            line = self.decode_chunk(line)
             yield smart_encode(line, self.output_encoding) + lf
+
+    def decode_chunk(self, raw_chunk: str) -> str:
+        chunk, guessed_encoding = smart_decode(raw_chunk, self.encoding)
+        self._encoding_guesses.append(guessed_encoding)
+        return chunk
+
+    @property
+    def encoding(self) -> Optional[str]:
+        if self._encoding:
+            return self._encoding
+
+        # If we find a reliable (used consecutively) encoding, than
+        # use it for the next iterations.
+        if len(self._encoding_guesses) < ENCODING_GUESS_THRESHOLD:
+            return None
+
+        guess_1, guess_2 = self._encoding_guesses[-2:]
+        if guess_1 == guess_2:
+            self._encoding = guess_1
+            return guess_1
+
+    @encoding.setter
+    def encoding(self, value) -> None:
+        self._encoding = value
 
 
 class PrettyStream(EncodedStream):
@@ -149,6 +191,10 @@ class PrettyStream(EncodedStream):
         return self.formatting.format_headers(
             self.msg.headers).encode(self.output_encoding)
 
+    def get_metadata(self) -> bytes:
+        return self.formatting.format_metadata(
+            self.msg.metadata).encode(self.output_encoding)
+
     def iter_body(self) -> Iterable[bytes]:
         first_chunk = True
         iter_lines = self.msg.iter_lines(self.CHUNK_SIZE)
@@ -174,7 +220,7 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = smart_decode(chunk, self.encoding)
+            chunk = self.decode_chunk(chunk)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
         return smart_encode(chunk, self.output_encoding)
 

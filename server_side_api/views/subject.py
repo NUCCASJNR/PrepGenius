@@ -3,9 +3,10 @@
 Handles all Restful APIs for subjects
 """
 
-from flask import Flask, jsonify, abort, request
+from flask import jsonify, abort, request
 from models.subject import Subject
 from server_side_api.views import api
+
 
 @api.route('/subjects', methods=['GET'], strict_slashes=False)
 def get_subjects():
@@ -19,16 +20,18 @@ def get_subjects():
         subs_list.append(sub_data)
     return jsonify(subs_list)
 
+
 @api.route('/subjects/<sub_id>', methods=['GET'], strict_slashes=False)
-def get_one_subject(sub_id):
+def get_one_subject(sub_id: str):
     """
     Retrieve one subject from the database using the
     provided subject_id
     """
-    sub = Subject.get(sub_id)
+    sub: str = Subject.get(sub_id)
     if sub:
         return jsonify(sub.to_dict())
     abort(404)
+
 
 @api.route('/subjects/<sub_id>', methods=['DELETE'], strict_slashes=False)
 def delete_one_subject(sub_id):
@@ -42,6 +45,7 @@ def delete_one_subject(sub_id):
         return jsonify({}), 200
     abort(404)
 
+
 @api.route('/subjects', methods=['POST'], strict_slashes=False)
 def create_subject():
     """
@@ -54,6 +58,7 @@ def create_subject():
     sub = Subject(**request.get_json())
     sub.save()
     return jsonify(sub.to_dict()), 201
+
 
 @api.route('/subjects/<sub_id>', methods=['PUT'], strict_slashes=False)
 def update_subject(sub_id):

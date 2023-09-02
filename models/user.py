@@ -15,13 +15,12 @@ class User(BaseModel):
         last_name: String
         password: String
     """
-    __tablename__ = 'users'
+    __tablename__: str = 'users'
     username = db.Column(db.String(60), unique=True, nullable=False)
     email = db.Column(db.String(256), unique=True, nullable=False)
     first_name = db.Column(db.String(60), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
     password = db.Column(db.String(60), nullable=False)
-
 
     def save(self):
         if not isinstance(self.email, str):

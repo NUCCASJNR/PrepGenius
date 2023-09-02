@@ -10,12 +10,13 @@ from urllib.parse import urlsplit
 from requests.utils import get_netrc_auth
 
 from .argtypes import (
-    AuthCredentials, KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS,
+    AuthCredentials, SSLCredentials, KeyValueArgType,
+    PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_auth,
     parse_format_options,
 )
 from .constants import (
-    HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
+    HTTP_GET, HTTP_POST, BASE_OUTPUT_OPTIONS, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
     OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
     SEPARATOR_CREDENTIALS,
@@ -47,20 +48,39 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
         text = dedent(text).strip() + '\n\n'
         return text.splitlines()
 
+    def add_usage(self, usage, actions, groups, prefix=None):
+        # Only display the positional arguments
+        displayed_actions = [
+            action
+            for action in actions
+            if not action.option_strings
+        ]
+
+        _, exception, _ = sys.exc_info()
+        if (
+            isinstance(exception, argparse.ArgumentError)
+            and len(exception.args) >= 1
+            and isinstance(exception.args[0], argparse.Action)
+        ):
+            # add_usage path is also taken when you pass an invalid option,
+            # e.g --style=invalid. If something like that happens, we want
+            # to include to action that caused to the invalid usage into
+            # the list of actions we are displaying.
+            displayed_actions.insert(0, exception.args[0])
+
+        super().add_usage(
+            usage,
+            displayed_actions,
+            groups,
+            prefix="usage:\n    "
+        )
+
 
 # TODO: refactor and design type-annotated data structures
 #       for raw args + parsed args and keep things immutable.
-class HTTPieArgumentParser(argparse.ArgumentParser):
-    """Adds additional logic to `argparse.ArgumentParser`.
-
-    Handles all input (CLI args, file args, stdin), applies defaults,
-    and performs extra validation.
-
-    """
-
-    def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
-        kwargs['add_help'] = False
-        super().__init__(*args, formatter_class=formatter_class, **kwargs)
+class BaseHTTPieArgumentParser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.env = None
         self.args = None
         self.has_stdin_data = False
@@ -74,6 +94,68 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         namespace=None
     ) -> argparse.Namespace:
         self.env = env
+        self.args, no_options = self.parse_known_args(args, namespace)
+        if self.args.debug:
+            self.args.traceback = True
+        self.has_stdin_data = (
+            self.env.stdin
+            and not getattr(self.args, 'ignore_stdin', False)
+            and not self.env.stdin_isatty
+        )
+        self.has_input_data = self.has_stdin_data or getattr(self.args, 'raw', None) is not None
+        return self.args
+
+    # noinspection PyShadowingBuiltins
+    def _print_message(self, message, file=None):
+        # Sneak in our stderr/stdout.
+        if hasattr(self, 'root'):
+            env = self.root.env
+        else:
+            env = self.env
+
+        if env is not None:
+            file = {
+                sys.stdout: env.stdout,
+                sys.stderr: env.stderr,
+                None: env.stderr
+            }.get(file, file)
+
+        if not hasattr(file, 'buffer') and isinstance(message, str):
+            message = message.encode(env.stdout_encoding)
+        super()._print_message(message, file)
+
+
+class HTTPieManagerArgumentParser(BaseHTTPieArgumentParser):
+    def parse_known_args(self, args=None, namespace=None):
+        try:
+            return super().parse_known_args(args, namespace)
+        except SystemExit as exc:
+            if not hasattr(self, 'root') and exc.code == 2:  # Argument Parser Error
+                raise argparse.ArgumentError(None, None)
+            raise
+
+
+class HTTPieArgumentParser(BaseHTTPieArgumentParser):
+    """Adds additional logic to `argparse.ArgumentParser`.
+
+    Handles all input (CLI args, file args, stdin), applies defaults,
+    and performs extra validation.
+
+    """
+
+    def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
+        kwargs.setdefault('add_help', False)
+        super().__init__(*args, formatter_class=formatter_class, **kwargs)
+
+    # noinspection PyMethodOverriding
+    def parse_args(
+        self,
+        env: Environment,
+        args=None,
+        namespace=None
+    ) -> argparse.Namespace:
+        self.env = env
+        self.env.args = namespace = namespace or argparse.Namespace()
         self.args, no_options = super().parse_known_args(args, namespace)
         if self.args.debug:
             self.args.traceback = True
@@ -95,6 +177,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._parse_items()
         self._process_url()
         self._process_auth()
+        self._process_ssl_cert()
 
         if self.args.raw is not None:
             self._body_from_input(self.args.raw)
@@ -120,6 +203,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         }
 
     def _process_url(self):
+        if self.args.url.startswith('://'):
+            # Paste URL & add space shortcut: `http ://pie.dev` → `http://pie.dev`
+            self.args.url = self.args.url[3:]
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(self.env.program_name) == 'https':
                 scheme = 'https://'
@@ -137,18 +223,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 self.args.url += rest
             else:
                 self.args.url = scheme + self.args.url
-
-    # noinspection PyShadowingBuiltins
-    def _print_message(self, message, file=None):
-        # Sneak in our stderr/stdout.
-        file = {
-            sys.stdout: self.env.stdout,
-            sys.stderr: self.env.stderr,
-            None: self.env.stderr
-        }.get(file, file)
-        if not hasattr(file, 'buffer') and isinstance(message, str):
-            message = message.encode(self.env.stdout_encoding)
-        super()._print_message(message, file)
 
     def _setup_standard_streams(self):
         """
@@ -186,9 +260,24 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout_isatty = False
 
         if self.args.quiet:
+            self.env.quiet = self.args.quiet
             self.env.stderr = self.env.devnull
             if not (self.args.output_file_specified and not self.args.download):
                 self.env.stdout = self.env.devnull
+            self.env.apply_warnings_filter()
+
+    def _process_ssl_cert(self):
+        from httpie.ssl_ import _is_key_file_encrypted
+
+        if self.args.cert_key_pass is None:
+            self.args.cert_key_pass = SSLCredentials(None)
+
+        if (
+            self.args.cert_key is not None
+            and self.args.cert_key_pass.value is None
+            and _is_key_file_encrypted(self.args.cert_key)
+        ):
+            self.args.cert_key_pass.prompt_password(self.args.cert_key)
 
     def _process_auth(self):
         # TODO: refactor & simplify this method.
@@ -252,6 +341,10 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                             ' --ignore-stdin is set.'
                         )
                     credentials.prompt_password(url.netloc)
+
+                if (credentials.key and credentials.value):
+                    plugin.raw_auth = credentials.key + ":" + credentials.value
+
                 self.args.auth = plugin.get_auth(
                     username=credentials.key,
                     password=credentials.value,
@@ -361,7 +454,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         try:
             request_items = RequestItems.from_args(
                 request_item_args=self.args.request_items,
-                as_form=self.args.form,
+                request_type=self.args.request_type,
             )
         except ParseError as e:
             if self.args.traceback:
@@ -412,8 +505,10 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.all = True
 
         if self.args.output_options is None:
-            if self.args.verbose:
+            if self.args.verbose >= 2:
                 self.args.output_options = ''.join(OUTPUT_OPTIONS)
+            elif self.args.verbose == 1:
+                self.args.output_options = ''.join(BASE_OUTPUT_OPTIONS)
             elif self.args.offline:
                 self.args.output_options = OUTPUT_OPTIONS_DEFAULT_OFFLINE
             elif not self.env.stdout_isatty:
@@ -462,3 +557,57 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         for options_group in format_options:
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
+
+    def print_manual(self):
+        from httpie.output.ui import man_pages
+
+        if man_pages.is_available(self.env.program_name):
+            man_pages.display_for(self.env, self.env.program_name)
+            return None
+
+        text = self.format_help()
+        with self.env.rich_console.pager():
+            self.env.rich_console.print(
+                text,
+                highlight=False
+            )
+
+    def print_usage(self, file):
+        from rich.text import Text
+        from httpie.output.ui import rich_help
+
+        whitelist = set()
+        _, exception, _ = sys.exc_info()
+        if (
+            isinstance(exception, argparse.ArgumentError)
+            and len(exception.args) >= 1
+            and isinstance(exception.args[0], argparse.Action)
+            and exception.args[0].option_strings
+        ):
+            # add_usage path is also taken when you pass an invalid option,
+            # e.g --style=invalid. If something like that happens, we want
+            # to include to action that caused to the invalid usage into
+            # the list of actions we are displaying.
+            whitelist.add(exception.args[0].option_strings[0])
+
+        usage_text = Text('usage', style='bold')
+        usage_text.append(':\n    ')
+        usage_text.append(rich_help.to_usage(self.spec, whitelist=whitelist))
+        self.env.rich_error_console.print(usage_text)
+
+    def error(self, message):
+        """Prints a usage message incorporating the message to stderr and
+        exits."""
+        self.print_usage(sys.stderr)
+        self.env.rich_error_console.print(
+            dedent(
+                f'''
+                [bold]error[/bold]:
+                    {message}
+
+                [bold]for more information[/bold]:
+                    run '{self.prog} --help' or visit https://httpie.io/docs/cli
+                '''.rstrip()
+            )
+        )
+        self.exit(2)

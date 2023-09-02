@@ -10,6 +10,9 @@ from database import app, db
 from models.user import User
 
 os.environ['TESTING'] = 'True'
+# app.config.from_pyfile('config_test.py')
+
+
 class UserTest(TestCase):
     def create_app(self):
         app.config['TESTING'] = True
@@ -21,6 +24,7 @@ class UserTest(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+
 
 class TestUserModel(UserTest):
     def test_user_model_save_and_retrieve(self):
@@ -81,19 +85,19 @@ class TestUserModel(UserTest):
             user2.save()
     
     def test_to_dict(self):
-       """
-       Test to_dict method on user
-       """
-       d_user = User(
+        """
+        Test to_dict method on user
+        """
+        d_user = User(
            email="test1@example.comic",
            username="test_user1",
            password="test",
            first_name="Test",
            last_name="User"
         )
-       d_user.save()
-       user_dict = d_user.to_dict()
-       expected_dict = {
+        d_user.save()
+        user_dict = d_user.to_dict()
+        expected_dict = {
            'id': d_user.id,
            'created_at': d_user.created_at,
            'updated_at': d_user.updated_at,
@@ -103,7 +107,7 @@ class TestUserModel(UserTest):
            'first_name': "Test",
            'last_name': "User"
         }
-       self.assertEqual(user_dict, expected_dict)
+        self.assertEqual(user_dict, expected_dict)
     
     def test_all(self):
         """
@@ -147,6 +151,7 @@ class TestUserModel(UserTest):
         user.save()
         retrieved_user = User.get(user.id)
         self.assertEqual(retrieved_user, user)
+
 
 if __name__ == '__main__':
     unittest.main()

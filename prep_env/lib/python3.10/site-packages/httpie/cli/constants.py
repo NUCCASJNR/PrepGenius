@@ -9,12 +9,14 @@ URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
+HTTP_OPTIONS = 'OPTIONS'
 
 # Various separators used in args
 SEPARATOR_HEADER = ':'
 SEPARATOR_HEADER_EMPTY = ';'
 SEPARATOR_CREDENTIALS = ':'
 SEPARATOR_PROXY = ':'
+SEPARATOR_HEADER_EMBED = ':@'
 SEPARATOR_DATA_STRING = '='
 SEPARATOR_DATA_RAW_JSON = ':='
 SEPARATOR_FILE_UPLOAD = '@'
@@ -22,6 +24,7 @@ SEPARATOR_FILE_UPLOAD_TYPE = ';type='  # in already parsed file upload path only
 SEPARATOR_DATA_EMBED_FILE_CONTENTS = '=@'
 SEPARATOR_DATA_EMBED_RAW_JSON_FILE = ':=@'
 SEPARATOR_QUERY_PARAM = '=='
+SEPARATOR_QUERY_EMBED_FILE = '==@'
 
 # Separators that become request data
 SEPARATOR_GROUP_DATA_ITEMS = frozenset({
@@ -40,13 +43,17 @@ SEPARATORS_GROUP_MULTIPART = frozenset({
 
 # Separators for items whose value is a filename to be embedded
 SEPARATOR_GROUP_DATA_EMBED_ITEMS = frozenset({
+    SEPARATOR_HEADER_EMBED,
+    SEPARATOR_QUERY_EMBED_FILE,
     SEPARATOR_DATA_EMBED_FILE_CONTENTS,
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
 })
 
-# Separators for raw JSON items
-SEPARATOR_GROUP_RAW_JSON_ITEMS = frozenset([
+# Separators for nested JSON items
+SEPARATOR_GROUP_NESTED_JSON_ITEMS = frozenset([
+    SEPARATOR_DATA_STRING,
     SEPARATOR_DATA_RAW_JSON,
+    SEPARATOR_DATA_EMBED_FILE_CONTENTS,
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
 ])
 
@@ -54,7 +61,9 @@ SEPARATOR_GROUP_RAW_JSON_ITEMS = frozenset([
 SEPARATOR_GROUP_ALL_ITEMS = frozenset({
     SEPARATOR_HEADER,
     SEPARATOR_HEADER_EMPTY,
+    SEPARATOR_HEADER_EMBED,
     SEPARATOR_QUERY_PARAM,
+    SEPARATOR_QUERY_EMBED_FILE,
     SEPARATOR_DATA_STRING,
     SEPARATOR_DATA_RAW_JSON,
     SEPARATOR_FILE_UPLOAD,
@@ -67,22 +76,34 @@ OUT_REQ_HEAD = 'H'
 OUT_REQ_BODY = 'B'
 OUT_RESP_HEAD = 'h'
 OUT_RESP_BODY = 'b'
+OUT_RESP_META = 'm'
 
-OUTPUT_OPTIONS = frozenset({
+BASE_OUTPUT_OPTIONS = frozenset({
     OUT_REQ_HEAD,
     OUT_REQ_BODY,
     OUT_RESP_HEAD,
-    OUT_RESP_BODY
+    OUT_RESP_BODY,
+})
+
+OUTPUT_OPTIONS = frozenset({
+    *BASE_OUTPUT_OPTIONS,
+    OUT_RESP_META,
 })
 
 # Pretty
+
+
+class PrettyOptions(enum.Enum):
+    STDOUT_TTY_ONLY = enum.auto()
+
+
 PRETTY_MAP = {
     'all': ['format', 'colors'],
     'colors': ['colors'],
     'format': ['format'],
     'none': []
 }
-PRETTY_STDOUT_TTY_ONLY = object()
+PRETTY_STDOUT_TTY_ONLY = PrettyOptions.STDOUT_TTY_ONLY
 
 
 DEFAULT_FORMAT_OPTIONS = [

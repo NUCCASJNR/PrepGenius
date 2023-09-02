@@ -4,6 +4,7 @@ Options class to handle the correct option of a question
 """
 from models.base_model import BaseModel, db
 
+
 class Option(BaseModel):
     """
     Option class that inherits from base_model

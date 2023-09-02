@@ -11,6 +11,7 @@ from database import db, app
 from flask import Flask
 from flask_migrate import Migrate
 
+
 class BaseModel(db.Model):
     """
     BaseModel class
@@ -29,7 +30,6 @@ class BaseModel(db.Model):
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
-
 
     def save(self):
         """
@@ -68,11 +68,11 @@ class BaseModel(db.Model):
         return cls.query.all()
     
     @classmethod
-    def get(cls, id):
+    def get(cls, obj_id: str):
         """
         Retrieve an object by its id.
         Returns the object if found, None otherwise.
         """
-        if id:
-            return cls.query.get(id)
+        if obj_id:
+            return db.session.get(cls, obj_id)
         return None
