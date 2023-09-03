@@ -2,7 +2,6 @@
 
 from flask import abort, jsonify, make_response, request
 from server_side_api.views import api
-from models.base_model import BaseModel, db
 from models.user import User
 
 
@@ -12,10 +11,7 @@ def get_users():
     Retrieves all users from the database
     """
     users = User.all()
-    user_list = []
-    for user in users:
-        user_data = user.to_dict()
-        user_list.append(user_data)
+    user_list = [user.to_dict() for user in users]
     return jsonify(user_list)
 
 
@@ -68,10 +64,11 @@ def post_new_user():
     user.save()
     return jsonify(user.to_dict()), 201
 
+
 @api.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id):
     """
-    Updates the details of an exisiting user in the users table
+    Updates the details of an existing user in the users table
     """
     form = request.get_json()
     ignore = ['id', 'created_at', 'updated_at']
@@ -84,4 +81,4 @@ def update_user(user_id):
         if key not in ignore:
             setattr(user, key, value)
     user.save()
-    return jsonify(user.to_dict()) 
+    return jsonify(user.to_dict())

@@ -6,7 +6,7 @@ import unittest
 from flask_testing import TestCase
 from sqlalchemy.exc import IntegrityError
 
-from database import app, db
+from config_test import app, db
 from models.user import User
 
 os.environ['TESTING'] = 'True'

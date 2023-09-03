@@ -13,11 +13,8 @@ def get_subjects():
     """
     Retrieves all the subjects from the database
     """
-    subs = Subject.all()
-    subs_list = []
-    for sub in subs:
-        sub_data = sub.to_dict()
-        subs_list.append(sub_data)
+    subjects = Subject.all()
+    subs_list = [subject.to_dict() for subject in subjects]
     return jsonify(subs_list)
 
 
